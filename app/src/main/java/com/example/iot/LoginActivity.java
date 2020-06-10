@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
         forget_password = (TextView) findViewById(R.id.tv_forget_pwd);
         btn_login = (Button) findViewById(R.id.btn_login);
         loadingBar = (ProgressBar) findViewById(R.id.probar_login);
+        loadingBar.setVisibility(View.INVISIBLE);
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,13 +44,14 @@ public class LoginActivity extends AppCompatActivity {
         {
             Toast.makeText(this,"Please write email....",Toast.LENGTH_SHORT).show();
         }
-        else if(TextUtils.isEmpty(password))
+        else if(TextUtils.isEmpty(pwd))
         {
             Toast.makeText(this,"Please write password....",Toast.LENGTH_SHORT).show();
         }
         else
         {
             loadingBar.setVisibility(View.VISIBLE);
+            btn_login.setText("Checking...");
         }
     }
 }
