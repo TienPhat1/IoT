@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LightIntensityActivity"
+    android:background="@drawable/backgroud">
+    <ImageView
+        android:id="@+id/i_logo_light_intensity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo"
+        android:adjustViewBounds="true"
+        android:maxHeight="90dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"/>
+    <LinearLayout
+        android:id="@+id/linear_light_intensity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="15dp">
+        <TextView
+            android:id="@+id/tv_admin_light_intensity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="username"
+            android:textSize="20dp"
+            android:textColor="@color/colorPrimary"
+            />
+        <ImageView
+            android:id="@+id/i_admin_light_intensity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/user"
+            android:adjustViewBounds="true"
+            android:maxHeight="40dp"
+            android:layout_marginLeft="15dp"/>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/tv_info_light_intensity"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:text="THÔNG TIN CƯỜNG ĐỘ ÁNH SÁNG"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="120dp"/>
+    <ImageView
+        android:id="@+id/i_light_intensity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logo"
+        android:adjustViewBounds="true"
+        android:maxWidth="170dp"
+        android:layout_below="@+id/tv_info_light_intensity"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"/>
+    <TextView
+        android:id="@+id/tv_recent_light_intensiy"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/i_light_intensity"
+        android:text="Cường độ ánh sáng hiện tại"
+        android:textSize="25dp"
+        android:textColor="@color/colorRed"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
+    <TextView
+        android:id="@+id/tv_value_light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Value"
+        android:textSize="25dp"
+        android:textColor="@color/colorPrimaryDark"
+        android:layout_below="@id/tv_recent_light_intensiy"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
+    <Button
+        android:id="@+id/btn_controller_light"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_value_light"
+        android:text="Controller light"
+        android:textColor="@color/colorWhite"
+        android:padding="10dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/btncotroller"
+        android:layout_centerHorizontal="true"/>
+
+
+
+</RelativeLayout>
