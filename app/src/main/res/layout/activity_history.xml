@@ -56,10 +56,22 @@
         android:layout_below="@+id/tv_title_history"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
+        android:layout_marginRight="110dp"
         android:hint="Time"
         android:background="@drawable/et_login"
         />
+    <ImageView
+        android:id="@+id/i_btn_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/searchbutton"
+        android:adjustViewBounds="true"
+        android:maxHeight="45dp"
+        android:maxWidth="45dp"
+        android:layout_below="@+id/tv_title_history"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="50dp"/>
     <HorizontalScrollView
         android:id="@+id/tb_scroll_view"
         android:layout_width="match_parent"
