@@ -115,9 +115,9 @@
         android:layout_marginLeft="40dp"/>
     <TextView
         android:id="@+id/tv_controller"
-        android:layout_width="150dp"
+        android:layout_width="170dp"
         android:layout_height="wrap_content"
-        android:text="Điều chỉnh cường độ ánh  "
+        android:text="Điều chỉnh cường độ ánh sáng"
         android:textSize="20dp"
         android:gravity="center"
         android:textColor="@color/colorPrimary"

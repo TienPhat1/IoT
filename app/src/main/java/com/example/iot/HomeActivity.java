@@ -19,7 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 public class HomeActivity extends AppCompatActivity {
     private TextView username;
     private String admindata = "admin";
-    private ImageView history, light_indensity;
+    private ImageView history, light_indensity, controller_light;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +54,15 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(HomeActivity.this,LightIntensityActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        controller_light = (ImageView) findViewById(R.id.i_controller);
+        controller_light.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this,ControllLightActivity.class);
                 startActivity(intent);
             }
         });

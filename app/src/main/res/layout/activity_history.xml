@@ -43,7 +43,7 @@
         android:id="@+id/tv_title_history"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="LICH SỬ"
+        android:text="LỊCH SỬ"
         android:textSize="30dp"
         android:textColor="@color/colorPrimary"
         android:layout_centerHorizontal="true"

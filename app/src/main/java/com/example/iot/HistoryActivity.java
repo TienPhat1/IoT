@@ -85,7 +85,8 @@ public class HistoryActivity extends AppCompatActivity {
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                init(dataHistory);
+                TableLayout table = (TableLayout) findViewById(R.id.table_main);
+                init(table,dataHistory);
             }
         });
 
@@ -106,22 +107,22 @@ public class HistoryActivity extends AppCompatActivity {
 
 
     @SuppressLint("SetTextI18n")
-    private void init(ArrayList<String[]> dataHis) {
-        TableLayout table = (TableLayout) findViewById(R.id.table_main);
+    private void init(TableLayout table,ArrayList<String[]> dataHis) {
+        table.removeAllViews();
         TableRow tb_row = new TableRow(this);
         TextView tv_area = new TextView(this);
         tv_area.setText("AREA");
-        tv_area.setTextColor(Color.BLACK);
+        tv_area.setTextColor(Color.RED);
         tv_area.setPadding(50,0,250,0);
         tb_row.addView(tv_area);
         TextView tv_value = new TextView(this);
         tv_value.setText("VALUE");
-        tv_value.setTextColor(Color.BLACK);
+        tv_value.setTextColor(Color.RED);
         tv_value.setPadding(0,0,150,0);
         tb_row.addView(tv_value);
         TextView tv_time = new TextView(this);
         tv_time.setText("TIME");
-        tv_time.setTextColor(Color.BLACK);
+        tv_time.setTextColor(Color.RED);
         tv_time.setPadding(0,0,0,0);
         tb_row.addView(tv_time);
         table.addView(tb_row);
@@ -144,7 +145,6 @@ public class HistoryActivity extends AppCompatActivity {
             tv_time_ind.setPadding(0, 0, 0, 0);
             tbrow.addView(tv_time_ind);
             table.addView(tbrow);
-
         }
 
     }
