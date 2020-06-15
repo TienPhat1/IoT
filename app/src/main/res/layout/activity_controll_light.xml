@@ -78,7 +78,7 @@
         android:text="0"
         android:textSize="30dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:gravity="center"
         android:background="@drawable/backgroundtextview"/>
     <Button
@@ -88,11 +88,19 @@
         android:padding="10dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/tv_value_controller_light"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="30dp"
         android:text="Change"
         android:textSize="25dp"
         android:textColor="@color/colorWhite"
         android:background="@drawable/btncotroller"/>
+    <Button
+        android:id="@+id/btn_turn_off_light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Turn off"
+        android:layout_below="@+id/btn_change_light"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="40dp"/>
 
 
 </RelativeLayout>
