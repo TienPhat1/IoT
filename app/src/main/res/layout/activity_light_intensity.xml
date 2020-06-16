@@ -69,16 +69,19 @@
         android:textColor="@color/colorRed"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"/>
+
     <TextView
         android:id="@+id/tv_value_light"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Value"
-        android:textSize="25dp"
-        android:textColor="@color/colorPrimaryDark"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_below="@id/tv_recent_light_intensiy"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:background="@drawable/backgroundtextview"
+        android:text="0"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="25dp" />
     <Button
         android:id="@+id/btn_controller_light"
         android:layout_width="250dp"
