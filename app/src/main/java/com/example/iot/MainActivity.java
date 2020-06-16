@@ -19,20 +19,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Intent intent = new Intent(MainActivity.this,LoginActivity.class);
         startActivity(intent);
-        MQTTHelper mqttHelper = new MQTTHelper(this);
         try {
-            startMQTT(mqttHelper);
+            startMQTT();
         } catch (MqttException e) {
             e.printStackTrace();
         }
+
     }
 
-    private void startMQTT(MQTTHelper mqttHelper) throws MqttException {
-        mqttHelper = new MQTTHelper(getApplicationContext());
+    public void startMQTT() throws MqttException {
+        MQTTHelper mqttHelper = new MQTTHelper(getApplicationContext());
         mqttHelper.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean reconnect, String serverURI) {
                 Log.w("mqtt", serverURI);
+                Log.w("data", String.valueOf(reconnect));
             }
 
             @Override
@@ -42,7 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
-
+                Log.d("Mqtt", message.toString());
+                Log.d("data",topic);
             }
 
             @Override

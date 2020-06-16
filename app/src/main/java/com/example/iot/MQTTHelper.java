@@ -17,16 +17,13 @@ import java.util.Arrays;
 public class MQTTHelper {
     final String serverUri = "tcp://52.187.69.114:1883";
     final String clientId = "id12345";
-    final String subscriptionTopic = "light";
+    final String subscriptionTopic = "topic/light";
     final String username = "pnt";
-    final String password = "";
+    final String password = "abc";
 
     public MqttAndroidClient mqttAndroidClient;
-    private MainActivity activity = null;
-    public MQTTHelper(MainActivity activity){
-        this.activity = activity;
-    }
-    public MQTTHelper(Context context) throws MqttException {
+
+    public MQTTHelper(final Context context) throws MqttException {
         mqttAndroidClient = new MqttAndroidClient(context,serverUri,clientId);
         mqttAndroidClient.setCallback(new MqttCallbackExtended() {
             @Override
@@ -41,9 +38,8 @@ public class MQTTHelper {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                Log.w("Mqtt", message.toString());
-                String sensor = new String(message.getPayload());
-                Log.d("data",topic);
+
+
             }
 
             @Override
@@ -94,7 +90,6 @@ public class MQTTHelper {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     Log.w("Mqtt","Subscribed!");
-                    Log.d("", Arrays.toString(asyncActionToken.getTopics()));
 
                 }
 
