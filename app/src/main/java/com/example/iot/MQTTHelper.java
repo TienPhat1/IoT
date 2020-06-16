@@ -16,9 +16,9 @@ import java.util.Arrays;
 
 public class MQTTHelper {
     final String serverUri = "tcp://52.187.69.114:1883";
-    final String clientId = "id12345";
+    final String clientId = "trucly";
     final String subscriptionTopic = "light";
-    final String username = "pnt";
+    final String username = "trucly";
     final String password = "";
 
     public MqttAndroidClient mqttAndroidClient;
@@ -42,8 +42,6 @@ public class MQTTHelper {
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 Log.w("Mqtt", message.toString());
-                String sensor = new String(message.getPayload());
-                Log.d("data",topic);
             }
 
             @Override
@@ -110,4 +108,5 @@ public class MQTTHelper {
         }
 
     }
+
 }
