@@ -1,4 +1,5 @@
 package com.example.iot;
+<<<<<<< HEAD
 import android.content.Context;
 import android.util.Log;
 
@@ -110,4 +111,8 @@ public class MQTTHelper {
         }
 
     }
+=======
+
+public class MQTTHelper {
+>>>>>>> 9b4aa24db615b332bc1d93d06cf391014abc510d
 }
