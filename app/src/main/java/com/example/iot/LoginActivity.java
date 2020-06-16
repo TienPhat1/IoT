@@ -43,12 +43,23 @@ public class LoginActivity extends AppCompatActivity {
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                validatedAccount();
+                try {
+                    validatedAccount();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    loadingBar.setVisibility(View.INVISIBLE);
+                    btn_login.setText("Login");
+                }
             }
         });
     }
 
-    private void validatedAccount() {
+    private void validatedAccount() throws InterruptedException {
         String user = email.getText().toString();
         String pwd = password.getText().toString();
         if(TextUtils.isEmpty(user))
@@ -63,14 +74,21 @@ public class LoginActivity extends AppCompatActivity {
         {
             loadingBar.setVisibility(View.VISIBLE);
             btn_login.setText("Checking...");
-            allowAccessToAccount(user,pwd);
-            loadingBar.setVisibility(View.INVISIBLE);
-            btn_login.setText("Login");
+            boolean flag = allowAccessToAccount(user,pwd);
+
+
+            if(!flag)
+            {
+                loadingBar.setVisibility(View.INVISIBLE);
+                btn_login.setText("Login");
+            }
 
         }
     }
 
-    private void allowAccessToAccount(final String user, final String pwd) {
+    private boolean allowAccessToAccount(final String user, final String pwd) {
+        final boolean[] flag = new boolean[1];
+        flag[0] = true;
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         final DatabaseReference RootRef = database.getReference();
         RootRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -88,15 +106,13 @@ public class LoginActivity extends AppCompatActivity {
                         else
                         {
                             Toast.makeText(LoginActivity.this,"Wrong password...",Toast.LENGTH_SHORT).show();
-                            loadingBar.setVisibility(View.INVISIBLE);
-                            btn_login.setText("Login");
+                            flag[0] = false;
                         }
                     }
                     else
                     {
                         Toast.makeText(LoginActivity.this,"Wrong email...",Toast.LENGTH_SHORT).show();
-                        loadingBar.setVisibility(View.INVISIBLE);
-                        btn_login.setText("Login");
+                        flag[0] = false;
                     }
                 }
             }
@@ -106,5 +122,6 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+        return flag[0];
     }
 }
