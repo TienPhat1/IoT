@@ -47,7 +47,7 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-                Log.w("sendData",mqttMessage.toString());
+                Log.w("data",mqttMessage.toString());
             }
 
             @Override
@@ -101,7 +101,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         startMQTT();
-        sendDataToMQTT("LightD","1","0");
+        sendDataToMQTT("LightD","1","182"); //test
 
         history = (ImageView) findViewById(R.id.i_history);
         history.setOnClickListener(new View.OnClickListener() {

@@ -14,17 +14,22 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONObject;
 
 public class MQTTHelper {
-    final String serverUri = "tcp://52.187.69.114:1883";
-<<<<<<< HEAD
-    final String clientId = "trucly";
+
+//    final String serverUri = "tcp://52.187.69.114:1883";
+//    final String serverUri = "tcp://13.76.250.158:1883";
+//    final String clientId = "trucly";
+//    final String subscriptionTopic = "Topic/Light";
+//    final String username = "trucly";
+//    final String password = "";
+
+    final String serverUri = "tcp://13.76.250.158:1883";
+    final String clientId = "abc";
     final String subscriptionTopic = "Topic/Light";
-    final String username = "trucly";
-=======
-    final String clientId = "id12345";
-    final String subscriptionTopic = "light";
-    final String username = "pnt";
->>>>>>> 69dd9dcd2baefd2864ef774da4f9e43f05a86482
-    final String password = "";
+    final String username = "BKvm2";
+    final String password = "Hcmut_CSE_2020";
+
+
+
 
     public MqttAndroidClient mqttAndroidClient;
 
