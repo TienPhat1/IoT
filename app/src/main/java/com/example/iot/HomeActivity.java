@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,10 +17,70 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import java.nio.charset.Charset;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class HomeActivity extends AppCompatActivity {
     private TextView username;
     private String admindata = "admin";
     private ImageView history, light_indensity, controller_light;
+
+    MQTTHelper mqttHelper;
+    public void startMQTT(){
+        mqttHelper = new MQTTHelper(getApplicationContext());
+        mqttHelper.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean b, String s) {
+
+            }
+
+            @Override
+            public void connectionLost(Throwable throwable) {
+
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
+                Log.w("sendData",mqttMessage.toString());
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
+
+            }
+        });
+    }
+
+    public void sendDataToMQTT(final String ID, final String value1, final String value2){
+        final Timer aTimer = new Timer();
+        TimerTask aTask = new TimerTask() {
+            @Override
+            public void run() {
+                MqttMessage msg = new MqttMessage();
+                msg.setId(1234);
+                msg.setQos(0);
+                msg.setRetained(true);
+
+                String data = "[{\"device_id\":\"LightD\", \"values\":[\"" + value1 + "\",\"" + value2 + "\"]}]";
+                byte[] b = data.getBytes(Charset.forName("UTF-8"));
+                msg.setPayload(b);
+
+                try {
+                    mqttHelper.mqttAndroidClient.publish("Topic/LightD", msg);
+                    Log.e("publish","published");
+                }catch (MqttException e){
+                }
+            }
+        };
+        aTimer.schedule(aTask, 10000, 10000);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +97,11 @@ public class HomeActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
+
+        startMQTT();
+        sendDataToMQTT("LightD","1","0");
 
         history = (ImageView) findViewById(R.id.i_history);
         history.setOnClickListener(new View.OnClickListener() {
