@@ -15,9 +15,15 @@ import org.json.JSONObject;
 
 public class MQTTHelper {
     final String serverUri = "tcp://52.187.69.114:1883";
+<<<<<<< HEAD
     final String clientId = "trucly";
     final String subscriptionTopic = "Topic/Light";
     final String username = "trucly";
+=======
+    final String clientId = "id12345";
+    final String subscriptionTopic = "light";
+    final String username = "pnt";
+>>>>>>> 69dd9dcd2baefd2864ef774da4f9e43f05a86482
     final String password = "";
 
     public MqttAndroidClient mqttAndroidClient;
