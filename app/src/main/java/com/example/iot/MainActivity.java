@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Intent intent = new Intent(MainActivity.this,LightIntensityActivity.class);
+        Intent intent = new Intent(MainActivity.this,ControllLightActivity.class);
         startActivity(intent);
 
     }

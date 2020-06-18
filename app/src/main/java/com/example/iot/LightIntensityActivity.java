@@ -12,8 +12,12 @@ import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class LightIntensityActivity extends AppCompatActivity {
     private ImageView logoApp;
@@ -66,7 +70,7 @@ public class LightIntensityActivity extends AppCompatActivity {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                Log.d("Mqtt", message.toString());
+                //Log.d("Mqtt", message.toString());
 
                 Log.d("topic",topic);
                 convertData(message);
@@ -80,15 +84,24 @@ public class LightIntensityActivity extends AppCompatActivity {
     }
 
     private void convertData(MqttMessage message) throws JSONException {
-        JSONObject jsonmgs = new JSONObject(new String(message.getPayload()));
-            String key = jsonmgs.keys().next();
-            Object valueData = jsonmgs.get(String.valueOf(key));
-            Log.i("Info", "Key: " + key + ", value: " + jsonmgs.getString(String.valueOf(key)));
-            String sValue= valueData.toString();
-            value = (TextView) findViewById(R.id.tv_value_light);
-            value.setText(sValue);
+            Log.d("abc",message.toString());
+            JSONArray jsonArray = new JSONArray(message.toString());
+            JSONObject jsonObject = null;
+            for (int i = 0; i <jsonArray.length() ; i ++)
+            {
+                jsonObject = jsonArray.getJSONObject(i);
+                Log.d("data",String.valueOf(i));
 
-            int intValue = Integer.parseInt(sValue);
+            }
+            for(int i = 0; i < jsonObject.length(); i++)
+            {
+                String val = jsonObject.getString("values").replaceAll("[^0-9]","");
+                value = (TextView) findViewById(R.id.tv_value_light);
+                value.setText(val);
+            }
+
+
+            //Log.d("abc", String.valueOf(jsonmgs));
 
     }
 

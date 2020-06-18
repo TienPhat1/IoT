@@ -99,8 +99,20 @@
         android:layout_height="wrap_content"
         android:text="Turn off"
         android:layout_below="@+id/btn_change_light"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="40dp"/>
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="40dp"
+        android:background="@drawable/buttondesign"/>
+    <Button
+        android:id="@+id/btn_turn_on_light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Turn on"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="40dp"
+        android:layout_below="@+id/btn_change_light"
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="40dp"
+        android:background="@drawable/buttondesign"/>
 
 
 </RelativeLayout>
