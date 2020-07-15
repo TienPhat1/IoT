@@ -30,56 +30,7 @@ public class HomeActivity extends AppCompatActivity {
     private TextView username;
     private String admindata = "admin";
     private ImageView history, light_indensity, controller_light;
-
-    MQTTHelper mqttHelper;
-    public void startMQTT(){
-        mqttHelper = new MQTTHelper(getApplicationContext());
-        mqttHelper.setCallback(new MqttCallbackExtended() {
-            @Override
-            public void connectComplete(boolean b, String s) {
-
-            }
-
-            @Override
-            public void connectionLost(Throwable throwable) {
-
-            }
-
-            @Override
-            public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-                Log.w("data",mqttMessage.toString());
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
-            }
-        });
-    }
-
-    public void sendDataToMQTT(final String ID, final String value1, final String value2){
-        final Timer aTimer = new Timer();
-        TimerTask aTask = new TimerTask() {
-            @Override
-            public void run() {
-                MqttMessage msg = new MqttMessage();
-                msg.setId(1234);
-                msg.setQos(0);
-                msg.setRetained(true);
-
-                String data = "[{\"device_id\":\"LightD\", \"values\":[\"" + value1 + "\",\"" + value2 + "\"]}]";
-                byte[] b = data.getBytes(Charset.forName("UTF-8"));
-                msg.setPayload(b);
-
-                try {
-                    mqttHelper.mqttAndroidClient.publish("Topic/LightD", msg);
-                    Log.e("publish","published");
-                }catch (MqttException e){
-                }
-            }
-        };
-        aTimer.schedule(aTask, 10000, 10000);
-    }
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +51,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        startMQTT();
-        sendDataToMQTT("LightD","1","182"); //test
 
         history = (ImageView) findViewById(R.id.i_history);
         history.setOnClickListener(new View.OnClickListener() {

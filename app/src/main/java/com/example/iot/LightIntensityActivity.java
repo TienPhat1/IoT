@@ -1,12 +1,20 @@
 package com.example.iot;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
@@ -16,8 +24,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Random;
 
 public class LightIntensityActivity extends AppCompatActivity {
     private ImageView logoApp;
@@ -98,11 +113,52 @@ public class LightIntensityActivity extends AppCompatActivity {
                 String val = jsonObject.getString("values").replaceAll("[^0-9]","");
                 value = (TextView) findViewById(R.id.tv_value_light);
                 value.setText(val);
+                pushDataToDatabase(val);
             }
 
 
             //Log.d("abc", String.valueOf(jsonmgs));
 
+    }
+
+    private void pushDataToDatabase(final String val) {
+        final FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference rootref = database.getReference();
+
+        rootref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Date date1 = new Date();
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+                String date = formatter.format(date1);
+                Log.d("Date",date);
+                LocalTime time = LocalTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+                HashMap<String,Object> dataSensor = new HashMap<>();
+                Random random = new Random();
+                int id_room = random.nextInt(3);
+                switch (id_room) {
+                    case 0: dataSensor.put("Area","Livingroom");
+                        break;
+                    case 1: dataSensor.put("Area","Bedroom");
+                        break;
+                    case 2: dataSensor.put("Area","Kitchenroom");
+                }
+                time.format(DateTimeFormatter.ofPattern("hh/mm/ss"));
+                dataSensor.put("Time",String.valueOf(time));
+                Log.d("Time",time.toString());
+                dataSensor.put("Value",val);
+                if(dataSnapshot.child("History").child(date.toString()).exists())
+                    rootref.child("History").child("20200716").push().updateChildren(dataSensor);
+                else
+                    rootref.child("History").child("20200716").updateChildren(dataSensor);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 }

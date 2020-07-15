@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -68,47 +70,97 @@ public class HistoryActivity extends AppCompatActivity {
 
             }
         });
-        final ArrayList<String[]> dataHistory = new ArrayList<String[]>();
-        rf2.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                collectDataHistory((Map<String,Object>) dataSnapshot.getValue(),dataHistory);
-            }
+        final FirebaseDatabase root = FirebaseDatabase.getInstance();
+        final ArrayList<String[]> dataHistory = new ArrayList<>();
+        final TableLayout table = (TableLayout) findViewById(R.id.table_main);
 
+        timeData.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH
+                        || event!=null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
+                    if(event == null || !event.isShiftPressed()){
+                        final String date_input = timeData.getText().toString().replace("-","").replace("/","");
+                        final DatabaseReference database = root.getReference();
+                        dataHistory.clear();
+                        database.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.child("History").child(date_input).exists()) {
+                                    Log.d("Date", date_input);
+                                    collectDataHis((Map<String, Object>) dataSnapshot.child("History").child(date_input).getValue(), dataHistory);
+                                }
 
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+                return false;
             }
         });
 
 
         btn_search.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                TableLayout table = (TableLayout) findViewById(R.id.table_main);
+
+//                String date_input = timeData.getText().toString();
+//
+//                DatabaseReference database = root.getReference().child("History").child(date_input);
+//                database.addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        collectDataHis((Map<String,Object>) dataSnapshot.getValue(), dataHistory );
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
+
+//                for(int i = 0; i < dataHistory.size();i++)
+//                    Log.d("value 1" , String.valueOf(dataHistory.get(i)[0]));
+//                    Log.d("datasize", String.valueOf(dataHistory.size()));
+                table.removeAllViewsInLayout();
                 init(table,dataHistory);
+
             }
+
+
+//            private void collectDataHis(Map<String, Object> value, ArrayList<String[]> dataHistory) {
+//                for(Map.Entry<String,Object> entry: value.entrySet())
+//                {
+//                    Map singleTime = (Map) entry.getValue();
+//                    String[] temp = {(String) singleTime.get("Area"),(String) singleTime.get("Value"),(String) singleTime.get("Time")};
+//                    dataHistory.add(temp);
+//                }
+//                for(int i = 0; i < dataHistory.size();i++)
+//                    Log.d("value is" , String.valueOf(dataHistory.get(i)[0]));
+//            }
         });
 
     }
 
-    private void collectDataHistory(Map<String, Object> value, ArrayList<String[]> dataHistory) {
-
+    private void collectDataHis(Map<String, Object> value, ArrayList<String[]> dataHistory) {
         for(Map.Entry<String,Object> entry: value.entrySet())
         {
             Map singleTime = (Map) entry.getValue();
             String[] temp = {(String) singleTime.get("Area"),(String) singleTime.get("Value"),(String) singleTime.get("Time")};
             dataHistory.add(temp);
         }
-//            for(int i = 0; i < dataHistory.size();i++)
-//                Log.d("value is" , String.valueOf(dataHistory.get(i)[1]));
+        for(int i = 0; i < dataHistory.size();i++)
+            Log.d("value is" , String.valueOf(dataHistory.get(i)[0]));
     }
-    //Query data history and insert into list
 
-
-    @SuppressLint("SetTextI18n")
-    private void init(TableLayout table,ArrayList<String[]> dataHis) {
-        table.removeAllViews();
+    private void init(TableLayout table, ArrayList<String[]> dataHis) {
         TableRow tb_row = new TableRow(this);
         TextView tv_area = new TextView(this);
         tv_area.setText("AREA");
@@ -146,6 +198,19 @@ public class HistoryActivity extends AppCompatActivity {
             tbrow.addView(tv_time_ind);
             table.addView(tbrow);
         }
-
     }
+
+
+//    private void collectDataHistory(Map<String, Object> value, ArrayList<String[]> dataHistory) {
+//          for(Map.Entry<String,Object> entry: value.entrySet())
+//                {
+//                    Map singleTime = (Map) entry.getValue();
+//                    String[] temp = {(String) singleTime.get("Area"),(String) singleTime.get("Value"),(String) singleTime.get("Time")};
+//                    dataHistory.add(temp);
+//                }
+//
+////            for(int i = 0; i < dataHistory.size();i++)
+////                Log.d("value is" , String.valueOf(dataHistory.get(i)[1]));
+//    }
+    //Query data history and insert into list
 }
