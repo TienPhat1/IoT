@@ -108,13 +108,15 @@ public class LightIntensityActivity extends AppCompatActivity {
                 Log.d("data",String.valueOf(i));
 
             }
+            String val = null;
             for(int i = 0; i < jsonObject.length(); i++)
             {
-                String val = jsonObject.getString("values").replaceAll("[^0-9]","");
+                val = jsonObject.getString("values").replaceAll("[^0-9]","");
                 value = (TextView) findViewById(R.id.tv_value_light);
                 value.setText(val);
-                pushDataToDatabase(val);
+                
             }
+            pushDataToDatabase(val);
 
 
             //Log.d("abc", String.valueOf(jsonmgs));
@@ -128,11 +130,14 @@ public class LightIntensityActivity extends AppCompatActivity {
         rootref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Date date1 = new Date();
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-                String date = formatter.format(date1);
-                Log.d("Date",date);
                 LocalTime time = LocalTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+                Date dateCurrent = new Date();
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy/MM/dd");
+                String date = formatter.format(dateCurrent);
+                String dateCurrent1 =formatter1.format(dateCurrent);
+                String [] dateParts = dateCurrent1.split("/");
+
                 HashMap<String,Object> dataSensor = new HashMap<>();
                 Random random = new Random();
                 int id_room = random.nextInt(3);
@@ -147,10 +152,13 @@ public class LightIntensityActivity extends AppCompatActivity {
                 dataSensor.put("Time",String.valueOf(time));
                 Log.d("Time",time.toString());
                 dataSensor.put("Value",val);
-                if(dataSnapshot.child("History").child(date.toString()).exists())
-                    rootref.child("History").child("20200716").push().updateChildren(dataSensor);
+                dataSensor.put("Year",dateParts[0]);
+                dataSensor.put("Month",dateParts[0]+dateParts[1]);
+                dataSensor.put("Day",date);
+                if(dataSnapshot.child("History").exists())
+                    rootref.child("History").push().updateChildren(dataSensor);
                 else
-                    rootref.child("History").child("20200716").updateChildren(dataSensor);
+                    rootref.child("History").updateChildren(dataSensor);
 
             }
 

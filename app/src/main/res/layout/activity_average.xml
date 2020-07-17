@@ -7,7 +7,7 @@
     tools:context=".HistoryActivity"
     android:background="@drawable/backgroud">
     <ImageView
-        android:id="@+id/i_logo_history"
+        android:id="@+id/i_logo_average"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/logo"
@@ -16,14 +16,14 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"/>
     <LinearLayout
-        android:id="@+id/linear_history"
+        android:id="@+id/linear_average"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginTop="10dp"
         android:layout_marginRight="15dp">
         <TextView
-            android:id="@+id/tv_admin_history"
+            android:id="@+id/tv_admin_average"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="username"
@@ -31,7 +31,7 @@
             android:textColor="@color/colorPrimary"
             />
         <ImageView
-            android:id="@+id/i_admin_history"
+            android:id="@+id/i_admin_average"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/user"
@@ -40,20 +40,20 @@
             android:layout_marginLeft="15dp"/>
     </LinearLayout>
     <TextView
-        android:id="@+id/tv_title_history"
+        android:id="@+id/tv_title_average"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="LỊCH SỬ"
+        android:text="GIÁ TRỊ TRUNG BÌNH"
         android:textSize="30dp"
         android:textColor="@color/colorPrimary"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="120dp"/>
     <EditText
-        android:id="@+id/et_history"
+        android:id="@+id/et_average"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:layout_below="@+id/tv_title_history"
+        android:layout_below="@+id/tv_title_average"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="110dp"
@@ -61,25 +61,25 @@
         android:background="@drawable/et_login"
         />
     <ImageView
-        android:id="@+id/i_btn_search"
+        android:id="@+id/i_btn_search_average"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/searchbutton"
         android:adjustViewBounds="true"
         android:maxHeight="45dp"
         android:maxWidth="45dp"
-        android:layout_below="@+id/tv_title_history"
+        android:layout_below="@+id/tv_title_average"
         android:layout_alignParentRight="true"
         android:layout_marginTop="10dp"
         android:layout_marginRight="50dp"/>
-        <HorizontalScrollView
-            android:id="@+id/tb_scroll_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
-            android:layout_marginTop="30dp"
-            android:layout_below="@+id/et_history">
+    <HorizontalScrollView
+        android:id="@+id/tb_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="30dp"
+        android:layout_below="@+id/et_average">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -89,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <TableLayout
-                    android:id="@+id/table_main"
+                    android:id="@+id/table_main_average"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true">

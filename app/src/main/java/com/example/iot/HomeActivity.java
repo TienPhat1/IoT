@@ -29,8 +29,8 @@ import java.util.TimerTask;
 public class HomeActivity extends AppCompatActivity {
     private TextView username;
     private String admindata = "admin";
-    private ImageView history, light_indensity, controller_light;
-    
+    private ImageView history, light_indensity, controller_light, average;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +75,15 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(HomeActivity.this,ControllLightActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        average = (ImageView) findViewById(R.id.i_avg_light);
+        average.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this,AverageActivity.class);
                 startActivity(intent);
             }
         });

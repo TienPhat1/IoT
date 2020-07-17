@@ -3,7 +3,6 @@ package com.example.iot;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -17,18 +16,16 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.example.iot.Model.Light;
 import com.example.iot.Model.Users;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 public class HistoryActivity extends AppCompatActivity {
@@ -70,8 +67,7 @@ public class HistoryActivity extends AppCompatActivity {
 
             }
         });
-        final FirebaseDatabase root = FirebaseDatabase.getInstance();
-        final ArrayList<String[]> dataHistory = new ArrayList<>();
+        final ArrayList<Light> dataHistory = new ArrayList<>();
         final TableLayout table = (TableLayout) findViewById(R.id.table_main);
 
         timeData.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -81,16 +77,19 @@ public class HistoryActivity extends AppCompatActivity {
                         || event!=null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
                     if(event == null || !event.isShiftPressed()){
                         final String date_input = timeData.getText().toString().replace("-","").replace("/","");
-                        final DatabaseReference database = root.getReference();
                         dataHistory.clear();
-                        database.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                        Query queryHis = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Day").equalTo(date_input);
+                        queryHis.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if(dataSnapshot.child("History").child(date_input).exists()) {
-                                    Log.d("Date", date_input);
-                                    collectDataHis((Map<String, Object>) dataSnapshot.child("History").child(date_input).getValue(), dataHistory);
+                                for(DataSnapshot snapshot: dataSnapshot.getChildren()){
+                                    Light light_data = snapshot.getValue(Light.class);
+                                    Map<String, Object> data = (Map<String, Object>) snapshot.getValue();
+                                    Log.d("data", String.valueOf(data));
+                                    //Log.d("Value",.getValue();
+                                    dataHistory.add(light_data);
                                 }
-
                             }
 
                             @Override
@@ -109,27 +108,8 @@ public class HistoryActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-
-//                String date_input = timeData.getText().toString();
-//
-//                DatabaseReference database = root.getReference().child("History").child(date_input);
-//                database.addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        collectDataHis((Map<String,Object>) dataSnapshot.getValue(), dataHistory );
-//
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                });
-
-//                for(int i = 0; i < dataHistory.size();i++)
-//                    Log.d("value 1" , String.valueOf(dataHistory.get(i)[0]));
-//                    Log.d("datasize", String.valueOf(dataHistory.size()));
                 table.removeAllViewsInLayout();
+                Log.d("DataHisLenght", String.valueOf(dataHistory.get(0).getArea()));
                 init(table,dataHistory);
 
             }
@@ -149,18 +129,8 @@ public class HistoryActivity extends AppCompatActivity {
 
     }
 
-    private void collectDataHis(Map<String, Object> value, ArrayList<String[]> dataHistory) {
-        for(Map.Entry<String,Object> entry: value.entrySet())
-        {
-            Map singleTime = (Map) entry.getValue();
-            String[] temp = {(String) singleTime.get("Area"),(String) singleTime.get("Value"),(String) singleTime.get("Time")};
-            dataHistory.add(temp);
-        }
-        for(int i = 0; i < dataHistory.size();i++)
-            Log.d("value is" , String.valueOf(dataHistory.get(i)[0]));
-    }
 
-    private void init(TableLayout table, ArrayList<String[]> dataHis) {
+    private void init(TableLayout table, ArrayList<Light> dataHis) {
         TableRow tb_row = new TableRow(this);
         TextView tv_area = new TextView(this);
         tv_area.setText("AREA");
@@ -182,17 +152,17 @@ public class HistoryActivity extends AppCompatActivity {
         {
             TableRow tbrow = new TableRow(this);
             TextView tv_area_ind = new TextView(this);
-            tv_area_ind.setText(String.valueOf(dataHis.get(i)[0]));
+            tv_area_ind.setText(String.valueOf(dataHis.get(i).getArea()));
             tv_area_ind.setTextColor(Color.BLACK);
             tv_area_ind.setPadding(50, 0, 200, 0);
             tbrow.addView(tv_area_ind);
             TextView tv_value_ind = new TextView(this);
-            tv_value_ind.setText(String.valueOf(dataHis.get(i)[1]));
+            tv_value_ind.setText(String.valueOf(dataHis.get(i).getValue()));
             tv_value_ind.setTextColor(Color.BLACK);
             tv_value_ind.setPadding(0, 0, 100, 0);
             tbrow.addView(tv_value_ind);
             TextView tv_time_ind = new TextView(this);
-            tv_time_ind.setText(String.valueOf(dataHis.get(i)[2]));
+            tv_time_ind.setText(String.valueOf(dataHis.get(i).getTime()));
             tv_time_ind.setTextColor(Color.BLACK);
             tv_time_ind.setPadding(0, 0, 0, 0);
             tbrow.addView(tv_time_ind);

@@ -83,7 +83,7 @@ public class ControllLightActivity extends AppCompatActivity {
         turn_on.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendDataToMQTT("Topic/lightD","1","0");
+                sendDataToMQTT("Topic/lightD","1","255");
             }
         });
         turn_off.setOnClickListener(new View.OnClickListener() {
