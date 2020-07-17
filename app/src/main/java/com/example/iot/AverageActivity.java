@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
@@ -23,14 +24,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.whiteelephant.monthpicker.MonthPickerDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
 public class AverageActivity extends AppCompatActivity {
-    private TextView username;
+    private TextView username, date, month, year;
     private String admindata = "admin";
     private ImageView btn_search,btn_logo_average;
     private EditText timeData;
@@ -41,8 +44,13 @@ public class AverageActivity extends AppCompatActivity {
         setContentView(R.layout.activity_average);
 
         btn_search = (ImageView) findViewById(R.id.i_btn_search_average);
-        timeData = (EditText) findViewById(R.id.et_average);
         btn_logo_average = (ImageView) findViewById(R.id.i_logo_average);
+        date = (TextView) findViewById(R.id.tv_date_average);
+        year = (TextView) findViewById(R.id.tv_year_average);
+        month = (TextView) findViewById(R.id.tv_month_average);
+
+
+
         btn_logo_average.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,6 +75,92 @@ public class AverageActivity extends AppCompatActivity {
 
             }
         });
+
+        ///////////////////////////////////////////////////////////////////////////////////
+        final int[] dayT = {0};
+        final int[] monthT = {0};
+        final int[] yearT = {0};
+        final ArrayList<String> dateTime = new ArrayList<String>();
+        year.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar today  = Calendar.getInstance();
+                MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(AverageActivity.this,
+                        new MonthPickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(int selectedMonth, int selectedYear) {
+                        year.setText(String.valueOf(selectedYear));
+                        yearT[0] = selectedYear;
+                    }
+                },today.get(Calendar.YEAR),today.get(Calendar.MONTH));
+                builder.setActivatedMonth(Calendar.JULY)
+                        .setMinYear(2000)
+                        .setActivatedYear(today.get(Calendar.YEAR))
+                        .setMaxYear(2030)
+                        .setTitle("Select Year")
+                        .showYearOnly()
+                        .build().show();
+            }
+        });
+
+        month.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar today  = Calendar.getInstance();
+                MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(AverageActivity.this,
+                        new MonthPickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(int selectedMonth, int selectedYear) {
+                                month.setText(String.valueOf(selectedMonth+1));
+                                monthT[0] = selectedMonth;
+                            }
+                        },today.get(Calendar.YEAR),today.get(Calendar.MONTH));
+                builder.setActivatedMonth(Calendar.JULY)
+                        .setMinMonth(0)
+                        .setActivatedYear(today.get(Calendar.YEAR))
+                        .setMaxMonth(11)
+                        .setTitle("Select Month")
+                        .showMonthOnly()
+                        .build().show();
+            }
+        });
+
+        date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar today  = Calendar.getInstance();
+                MonthPickerDialog.Builder builder = new MonthPickerDialog.Builder(AverageActivity.this,
+                        new MonthPickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(int selectedMonth, int selectedYear) {
+                                date.setText(String.valueOf(selectedYear));
+                                dayT[0] = selectedYear;
+                            }
+                        },today.get(Calendar.YEAR),today.get(Calendar.MONTH));
+                builder.setActivatedMonth(Calendar.JULY)
+                        .setMinYear(1)
+                        .setActivatedYear(today.get(Calendar.DATE))
+                        .setMaxYear(31)
+                        .setTitle("Select Day")
+                        .showYearOnly()
+                        .setOnYearChangedListener(new MonthPickerDialog.OnYearChangedListener() {
+                            @Override
+                            public void onYearChanged(int year) {
+                                yearT[0] = year;
+                                Log.d("day", String.valueOf(yearT[0]));
+                            }
+                        })
+                        .build().show();
+            }
+        });
+
+//            Log.d("day", String.valueOf(dayT[0]));
+//            Log.d("day", String.valueOf(monthT[0]));
+
+
+        //////////////////////////////////
+
+
         final FirebaseDatabase root = FirebaseDatabase.getInstance();
         final ArrayList<Light> dataHistory = new ArrayList<>();
         final TableLayout table = (TableLayout) findViewById(R.id.table_main_average);
@@ -104,8 +198,6 @@ public class AverageActivity extends AppCompatActivity {
 
 
     }
-
-
 
     private void init(TableLayout table, ArrayList<String[]> dataHis) {
         TableRow tb_row = new TableRow(this);
