@@ -79,7 +79,7 @@ public class HistoryActivity extends AppCompatActivity {
                         final String date_input = timeData.getText().toString().replace("-","").replace("/","");
                         dataHistory.clear();
 
-                        Query queryHis = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Day").equalTo(date_input);
+                        Query queryHis = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Year").equalTo(date_input);
                         queryHis.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

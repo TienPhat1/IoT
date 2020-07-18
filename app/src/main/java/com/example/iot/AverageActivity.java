@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.iot.Model.Light;
 import com.example.iot.Model.Users;
@@ -77,10 +78,9 @@ public class AverageActivity extends AppCompatActivity {
         });
 
         ///////////////////////////////////////////////////////////////////////////////////
-        final int[] dayT = {0};
-        final int[] monthT = {0};
-        final int[] yearT = {0};
-        final ArrayList<String> dateTime = new ArrayList<String>();
+        final ArrayList<Light> dataForDate = new ArrayList<Light>();
+        final String[] dateTime = {"","",""};
+        //Log.d("Lenght date", String.valueOf(dateTime.length));
         year.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,12 +90,12 @@ public class AverageActivity extends AppCompatActivity {
                     @Override
                     public void onDateSet(int selectedMonth, int selectedYear) {
                         year.setText(String.valueOf(selectedYear));
-                        yearT[0] = selectedYear;
+                        dateTime[0] = (String.valueOf(selectedYear));
                     }
                 },today.get(Calendar.YEAR),today.get(Calendar.MONTH));
                 builder.setActivatedMonth(Calendar.JULY)
                         .setMinYear(2000)
-                        .setActivatedYear(today.get(Calendar.YEAR))
+                        .setActivatedYear(2020)
                         .setMaxYear(2030)
                         .setTitle("Select Year")
                         .showYearOnly()
@@ -112,7 +112,7 @@ public class AverageActivity extends AppCompatActivity {
                             @Override
                             public void onDateSet(int selectedMonth, int selectedYear) {
                                 month.setText(String.valueOf(selectedMonth+1));
-                                monthT[0] = selectedMonth;
+                                dateTime[1] = (0 +String.valueOf(selectedMonth+1));
                             }
                         },today.get(Calendar.YEAR),today.get(Calendar.MONTH));
                 builder.setActivatedMonth(Calendar.JULY)
@@ -134,7 +134,7 @@ public class AverageActivity extends AppCompatActivity {
                             @Override
                             public void onDateSet(int selectedMonth, int selectedYear) {
                                 date.setText(String.valueOf(selectedYear));
-                                dayT[0] = selectedYear;
+                                dateTime[2] = (String.valueOf(selectedYear));
                             }
                         },today.get(Calendar.YEAR),today.get(Calendar.MONTH));
                 builder.setActivatedMonth(Calendar.JULY)
@@ -143,14 +143,25 @@ public class AverageActivity extends AppCompatActivity {
                         .setMaxYear(31)
                         .setTitle("Select Day")
                         .showYearOnly()
-                        .setOnYearChangedListener(new MonthPickerDialog.OnYearChangedListener() {
-                            @Override
-                            public void onYearChanged(int year) {
-                                yearT[0] = year;
-                                Log.d("day", String.valueOf(yearT[0]));
-                            }
-                        })
                         .build().show();
+            }
+        });
+        btn_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(int i = 0 ; i < dateTime.length; i++) {
+                    Log.d("year-month-day", dateTime[i]);
+                }
+                queryDataByDay(dateTime,dataForDate);
+
+//                try {
+//                    wait(2);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+                for(int i = 0 ; i < dataForDate.size(); i++)
+                    Log.d("Data12345",dataForDate.get(i).getArea());
+                Log.d("DATASIZE", String.valueOf(dataForDate.size()));
             }
         });
 
@@ -161,42 +172,123 @@ public class AverageActivity extends AppCompatActivity {
         //////////////////////////////////
 
 
-        final FirebaseDatabase root = FirebaseDatabase.getInstance();
-        final ArrayList<Light> dataHistory = new ArrayList<>();
-        final TableLayout table = (TableLayout) findViewById(R.id.table_main_average);
-        Date date1 = new Date();
+//        final FirebaseDatabase root = FirebaseDatabase.getInstance();
+//        final ArrayList<Light> dataHistory = new ArrayList<>();
+//        final TableLayout table = (TableLayout) findViewById(R.id.table_main_average);
+//        Date date1 = new Date();
+//
+//        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+//        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy/MM/dd");
+//        String date = formatter1.format(date1);
+//        String [] dateParterns = date.split("/");
+//        Log.d("Date", String.valueOf(dateParterns[0]));
+//
+//        Query query = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Area");
+//        query.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                dataHistory.clear();
+//                if(dataSnapshot.exists()){
+//                    //for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
+//                        for (DataSnapshot snap : dataSnapshot.getChildren()) {
+//                            //Light dataLight = snapshot.getValue(Light.class);
+//                            Map<String, Object> data = (Map<String, Object>) snap.getValue();
+//                            Log.d("data", String.valueOf(data));
+//                            //dataHistory.add(dataLight);
+//                        }
+//                    //}
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
+//        Log.d("Lenght", String.valueOf(dataHistory.size()));
 
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy/MM/dd");
-        String date = formatter1.format(date1);
-        String [] dateParterns = date.split("/");
-        Log.d("Date", String.valueOf(dateParterns[0]));
 
-        Query query = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Area");
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                dataHistory.clear();
-                if(dataSnapshot.exists()){
-                    //for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
-                        for (DataSnapshot snap : dataSnapshot.getChildren()) {
-                            //Light dataLight = snapshot.getValue(Light.class);
-                            Map<String, Object> data = (Map<String, Object>) snap.getValue();
-                            Log.d("data", String.valueOf(data));
-                            //dataHistory.add(dataLight);
+    }
+
+    private void queryDataByDay(String[] dateTime, final ArrayList<Light> dataForDate) {
+        String dateChoose = dateTime[0]+dateTime[1]+dateTime[2];
+        Query query;
+        Log.d("datechoose", String.valueOf(dateChoose.length()));
+        if(dateChoose.length() == 0){
+            Toast.makeText(AverageActivity.this,"Please choose date...",Toast.LENGTH_SHORT).show();
+        }
+        else{
+            switch (dateChoose.length()){
+                case 4:
+                    Log.d("sig", String.valueOf(1));
+                    query = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Year").equalTo(dateChoose);
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                                Light lightData = snapshot.getValue(Light.class);
+                                dataForDate.add(lightData);
+                            }
                         }
-                    //}
-                }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    break;
+                case 6:
+                    Log.d("sig", String.valueOf(1));
+                    query = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Month").equalTo(dateChoose);
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                                Light lightData = snapshot.getValue(Light.class);
+                                dataForDate.add(lightData);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    break;
+                case 8:
+                    Log.d("sig", String.valueOf(1));
+                    query  = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Day").equalTo(dateChoose);
+                    query.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+                                Light lightData = snapshot.getValue(Light.class);
+                                dataForDate.add(lightData);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                    break;
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        Log.d("Lenght", String.valueOf(dataHistory.size()));
-
-
+        }
+//        query.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
+//                    Light lightData = snapshot.getValue(Light.class);
+//                    dataForDate.add(lightData);
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//            }
+//        });
     }
 
     private void init(TableLayout table, ArrayList<String[]> dataHis) {
