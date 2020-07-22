@@ -1,15 +1,10 @@
 package com.example.iot;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,7 +14,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,53 +23,23 @@ import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 
-public class LightIntensityActivity extends AppCompatActivity {
-    private ImageView logoApp;
-    private TextView value;
-    public String data;
+public class MQTT {
+    public Context getAppContex = null;
 
-    public void setData(String data) {
-        this.data = data;
+    public MQTT(Context getAppCont){
+        getAppContex = getAppCont;
     }
 
-    public String getData() {
-        return data;
+    public Context getAppContex() {
+        return getAppContex;
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_light_intensity);
-
-        logoApp = (ImageView) findViewById(R.id.i_logo_light_intensity);
-        value = (TextView) findViewById(R.id.tv_value_light);
-
-        logoApp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent intent = new Intent(LightIntensityActivity.this, HomeActivity.class);
-                startActivity(intent);
-
-            }
-        });
-
-
-        try {
-            startMQTT();
-
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-    }
-    public void startMQTT() throws MqttException {
-        MQTTHelper mqttHelper = new MQTTHelper(getApplicationContext());
+    public void startMQTT(Context context){
+        MQTTHelper mqttHelper = new MQTTHelper(context);
         mqttHelper.setCallback(new MqttCallbackExtended() {
             @Override
             public void connectComplete(boolean reconnect, String serverURI) {
@@ -92,7 +56,6 @@ public class LightIntensityActivity extends AppCompatActivity {
                 //Log.d("Mqtt", message.toString());
 
                 Log.d("topic",topic);
-                convertData(message);
             }
 
             @Override
@@ -103,28 +66,21 @@ public class LightIntensityActivity extends AppCompatActivity {
     }
 
     private void convertData(MqttMessage message) throws JSONException {
-            Log.d("abc",message.toString());
-            JSONArray jsonArray = new JSONArray(message.toString());
-            JSONObject jsonObject = null;
-            for (int i = 0; i <jsonArray.length() ; i ++)
-            {
-                jsonObject = jsonArray.getJSONObject(i);
-                Log.d("data",String.valueOf(i));
+        JSONArray jsonArray = new JSONArray(message.toString());
+        JSONObject jsonObject = null;
+        for (int i = 0; i <jsonArray.length() ; i ++)
+        {
+            jsonObject = jsonArray.getJSONObject(i);
+            Log.d("data",String.valueOf(i));
 
-            }
-            String val = null;
-            for(int i = 0; i < jsonObject.length(); i++)
-            {
-                val = jsonObject.getString("values").replaceAll("[^0-9]","");
-                value = (TextView) findViewById(R.id.tv_value_light);
-                value.setText(val);
+        }
+        String val = null;
+        for(int i = 0; i < jsonObject.length(); i++)
+        {
+            val = jsonObject.getString("values").replaceAll("[^0-9]","");
 
-            }
-            pushDataToDatabase(val);
-
-
-            //Log.d("abc", String.valueOf(jsonmgs));
-
+        }
+        pushDataToDatabase(val);
     }
 
     private void pushDataToDatabase(final String val) {

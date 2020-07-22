@@ -3,14 +3,13 @@ package com.example.iot;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -27,17 +26,17 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.whiteelephant.monthpicker.MonthPickerDialog;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 public class AverageActivity extends AppCompatActivity {
     private TextView username, date, month, year;
     private String admindata = "admin";
     private ImageView btn_search,btn_logo_average;
-    private EditText timeData;
+    private Button btn_ok,btn_viewgraph;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +48,10 @@ public class AverageActivity extends AppCompatActivity {
         date = (TextView) findViewById(R.id.tv_date_average);
         year = (TextView) findViewById(R.id.tv_year_average);
         month = (TextView) findViewById(R.id.tv_month_average);
-
+        btn_ok = (Button) findViewById(R.id.btn_OK);
+        btn_viewgraph = (Button) findViewById(R.id.btn_viewgraph);
+        btn_viewgraph.setVisibility(Button.INVISIBLE);
+        final TableLayout table = (TableLayout) findViewById(R.id.table_main_average);
 
 
         btn_logo_average.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +78,10 @@ public class AverageActivity extends AppCompatActivity {
 
             }
         });
+        /////////////////////////////////////////////////
+        MQTT startMQTT = new MQTT(getApplicationContext());
+        Context context = startMQTT.getAppContex();
+        startMQTT.startMQTT(context);
 
         ///////////////////////////////////////////////////////////////////////////////////
         final ArrayList<Light> dataForDate = new ArrayList<Light>();
@@ -139,75 +145,70 @@ public class AverageActivity extends AppCompatActivity {
                         },today.get(Calendar.YEAR),today.get(Calendar.MONTH));
                 builder.setActivatedMonth(Calendar.JULY)
                         .setMinYear(1)
-                        .setActivatedYear(today.get(Calendar.DATE))
+                        .setActivatedYear(1)
                         .setMaxYear(31)
                         .setTitle("Select Day")
                         .showYearOnly()
                         .build().show();
             }
         });
-        btn_search.setOnClickListener(new View.OnClickListener() {
+
+        btn_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for(int i = 0 ; i < dateTime.length; i++) {
-                    Log.d("year-month-day", dateTime[i]);
-                }
                 queryDataByDay(dateTime,dataForDate);
-
-//                try {
-//                    wait(2);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-                for(int i = 0 ; i < dataForDate.size(); i++)
-                    Log.d("Data12345",dataForDate.get(i).getArea());
-                Log.d("DATASIZE", String.valueOf(dataForDate.size()));
             }
         });
 
-//            Log.d("day", String.valueOf(dayT[0]));
-//            Log.d("day", String.valueOf(monthT[0]));
-
-
-        //////////////////////////////////
-
-
-//        final FirebaseDatabase root = FirebaseDatabase.getInstance();
-//        final ArrayList<Light> dataHistory = new ArrayList<>();
-//        final TableLayout table = (TableLayout) findViewById(R.id.table_main_average);
-//        Date date1 = new Date();
-//
-//        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-//        @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy/MM/dd");
-//        String date = formatter1.format(date1);
-//        String [] dateParterns = date.split("/");
-//        Log.d("Date", String.valueOf(dateParterns[0]));
-//
-//        Query query = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Area");
-//        query.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                dataHistory.clear();
-//                if(dataSnapshot.exists()){
-//                    //for(DataSnapshot snapshot: dataSnapshot.getChildren()) {
-//                        for (DataSnapshot snap : dataSnapshot.getChildren()) {
-//                            //Light dataLight = snapshot.getValue(Light.class);
-//                            Map<String, Object> data = (Map<String, Object>) snap.getValue();
-//                            Log.d("data", String.valueOf(data));
-//                            //dataHistory.add(dataLight);
-//                        }
-//                    //}
+        btn_search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                for(int i = 0 ; i < dateTime.length; i++) {
+//                    Log.d("year-month-day", dateTime[i]);
 //                }
-//            }
 //
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
 //
-//            }
-//        });
-//        Log.d("Lenght", String.valueOf(dataHistory.size()));
+//                for(int i = 0 ; i < dataForDate.size(); i++)
+//                    Log.d("Data12345",dataForDate.get(i).getArea());
+//                Log.d("DATASIZE", String.valueOf(dataForDate.size()));
+                Hashtable <String,int[]> dateAverage = computeDataAverage(dataForDate);
+                Log.d("dic", String.valueOf(dateAverage.get("Bedroom")[0]));
+                init(table,dataForDate);
+                btn_viewgraph.setVisibility(Button.VISIBLE);
+            }
+        });
+
+        btn_viewgraph.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AverageActivity.this,GraphActivity.class);
+                intent.putExtra("DataAverage",dataForDate);
+                startActivity(intent);
+            }
+        });
 
 
+
+    }
+
+    private Hashtable computeDataAverage(ArrayList<Light> dataForDate) {
+        Hashtable<String, int[]> value = new Hashtable<>();
+        int [] lightvalue = new int[2];
+        for(Light light: dataForDate){
+            Log.d("check",light.getArea());
+            if(value.get(light.getArea())== null){
+                Log.d("Logic", String.valueOf(1));
+                lightvalue[0] = Integer.parseInt(light.getValue());
+                lightvalue[1] = 1;
+                value.put(light.getArea(),lightvalue);
+            }
+            else{
+                lightvalue[0] = Integer.parseInt(light.getValue());
+                lightvalue[1] = value.get(light.getArea())[1] + 1;
+                value.put(light.getArea(),lightvalue);
+            }
+        }
+        return value;
     }
 
     private void queryDataByDay(String[] dateTime, final ArrayList<Light> dataForDate) {
@@ -291,7 +292,7 @@ public class AverageActivity extends AppCompatActivity {
 //        });
     }
 
-    private void init(TableLayout table, ArrayList<String[]> dataHis) {
+    private void init(TableLayout table, ArrayList<Light> dataHis) {
         TableRow tb_row = new TableRow(this);
         TextView tv_area = new TextView(this);
         tv_area.setText("AREA");
@@ -313,17 +314,17 @@ public class AverageActivity extends AppCompatActivity {
         {
             TableRow tbrow = new TableRow(this);
             TextView tv_area_ind = new TextView(this);
-            tv_area_ind.setText(String.valueOf(dataHis.get(i)[0]));
+            tv_area_ind.setText(String.valueOf(dataHis.get(i).getArea()));
             tv_area_ind.setTextColor(Color.BLACK);
             tv_area_ind.setPadding(50, 0, 200, 0);
             tbrow.addView(tv_area_ind);
             TextView tv_value_ind = new TextView(this);
-            tv_value_ind.setText(String.valueOf(dataHis.get(i)[1]));
+            tv_value_ind.setText(String.valueOf(dataHis.get(i).getValue()));
             tv_value_ind.setTextColor(Color.BLACK);
             tv_value_ind.setPadding(0, 0, 100, 0);
             tbrow.addView(tv_value_ind);
             TextView tv_time_ind = new TextView(this);
-            tv_time_ind.setText(String.valueOf(dataHis.get(i)[2]));
+            tv_time_ind.setText(String.valueOf(dataHis.get(i).getTime()));
             tv_time_ind.setTextColor(Color.BLACK);
             tv_time_ind.setPadding(0, 0, 0, 0);
             tbrow.addView(tv_time_ind);

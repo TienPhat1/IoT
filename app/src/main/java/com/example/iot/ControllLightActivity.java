@@ -2,6 +2,7 @@ package com.example.iot;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -67,6 +68,9 @@ public class ControllLightActivity extends AppCompatActivity {
 
             }
         });
+        MQTT startMQTT = new MQTT(getApplicationContext());
+        Context context = startMQTT.getAppContex();
+        startMQTT.startMQTT(context);
 
         try {
             startMQTT();
