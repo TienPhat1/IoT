@@ -30,6 +30,7 @@ import com.whiteelephant.monthpicker.MonthPickerDialog;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Objects;
 
@@ -173,7 +174,7 @@ public class AverageActivity extends AppCompatActivity {
 //                for(int i = 0 ; i < dataForDate.size(); i++)
 //                    Log.d("Data12345",dataForDate.get(i).getArea());
 //                Log.d("DATASIZE", String.valueOf(dataForDate.size()));
-                Hashtable <String, String> dataAverage = computeDataAverage(dataForDate);
+                HashMap <String, String> dataAverage = computeDataAverage(dataForDate);
                 Log.d("daaaaaaaa", String.valueOf(dataAverage));
                 init(table,dataAverage);
                 btn_viewgraph.setVisibility(Button.VISIBLE);
@@ -183,8 +184,9 @@ public class AverageActivity extends AppCompatActivity {
         btn_viewgraph.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                HashMap <String, String> dataAverage = computeDataAverage(dataForDate);
                 Intent intent = new Intent(AverageActivity.this,GraphActivity.class);
-                intent.putExtra("DataAverage",dataForDate);
+                intent.putExtra("DataAverage",dataAverage);
                 startActivity(intent);
             }
         });
@@ -194,9 +196,9 @@ public class AverageActivity extends AppCompatActivity {
     }
 
     @SuppressLint("DefaultLocale")
-    private Hashtable computeDataAverage(ArrayList<Light> dataForDate) {
-        Hashtable<String, String> value = new Hashtable<>();
-        Hashtable<String, int[]> valueTemp = new Hashtable<>();
+    private HashMap<String,String> computeDataAverage(ArrayList<Light> dataForDate) {
+        HashMap<String, String> value = new HashMap<>();
+        HashMap<String, int[]> valueTemp = new HashMap<>();
 
         for(Light light: dataForDate){
             if(valueTemp.get(light.getArea())== null){
@@ -301,7 +303,7 @@ public class AverageActivity extends AppCompatActivity {
 //        });
     }
 
-    private void init(TableLayout table, Hashtable<String, String> dataAverage) {TableRow tb_row = new TableRow(this);
+    private void init(TableLayout table, HashMap<String, String> dataAverage) {TableRow tb_row = new TableRow(this);
         TextView tv_area = new TextView(this);
         tv_area.setText("AREA");
         tv_area.setTextColor(Color.RED);
