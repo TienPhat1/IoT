@@ -3,6 +3,7 @@ package com.example.iot;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.Objects;
 
 public class AverageActivity extends AppCompatActivity {
     private TextView username, date, month, year;
@@ -171,9 +173,9 @@ public class AverageActivity extends AppCompatActivity {
 //                for(int i = 0 ; i < dataForDate.size(); i++)
 //                    Log.d("Data12345",dataForDate.get(i).getArea());
 //                Log.d("DATASIZE", String.valueOf(dataForDate.size()));
-                Hashtable <String,int[]> dateAverage = computeDataAverage(dataForDate);
-                Log.d("dic", String.valueOf(dateAverage.get("Bedroom")[0]));
-                init(table,dataForDate);
+                Hashtable <String, String> dataAverage = computeDataAverage(dataForDate);
+                Log.d("daaaaaaaa", String.valueOf(dataAverage));
+                init(table,dataAverage);
                 btn_viewgraph.setVisibility(Button.VISIBLE);
             }
         });
@@ -191,23 +193,30 @@ public class AverageActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("DefaultLocale")
     private Hashtable computeDataAverage(ArrayList<Light> dataForDate) {
-        Hashtable<String, int[]> value = new Hashtable<>();
-        int [] lightvalue = new int[2];
+        Hashtable<String, String> value = new Hashtable<>();
+        Hashtable<String, int[]> valueTemp = new Hashtable<>();
+
         for(Light light: dataForDate){
-            Log.d("check",light.getArea());
-            if(value.get(light.getArea())== null){
-                Log.d("Logic", String.valueOf(1));
+            if(valueTemp.get(light.getArea())== null){
+                int [] lightvalue = new int[2];
                 lightvalue[0] = Integer.parseInt(light.getValue());
                 lightvalue[1] = 1;
-                value.put(light.getArea(),lightvalue);
+                valueTemp.put(light.getArea(),lightvalue);
             }
             else{
-                lightvalue[0] = Integer.parseInt(light.getValue());
-                lightvalue[1] = value.get(light.getArea())[1] + 1;
-                value.put(light.getArea(),lightvalue);
+                int [] lightvalue = new int[2];
+                lightvalue[0] = Objects.requireNonNull(valueTemp.get(light.getArea()))[0] + Integer.parseInt(light.getValue());
+                lightvalue[1] = Objects.requireNonNull(valueTemp.get(light.getArea()))[1] + 1;
+                valueTemp.put(light.getArea(),lightvalue);
             }
         }
+        for(String key: valueTemp.keySet()){
+            float valueAver =  (float)Objects.requireNonNull(valueTemp.get(key))[0] / (float)Objects.requireNonNull(valueTemp.get(key))[1];
+            value.put(key,String.format("%.2f",valueAver));
+        }
+
         return value;
     }
 
@@ -292,8 +301,7 @@ public class AverageActivity extends AppCompatActivity {
 //        });
     }
 
-    private void init(TableLayout table, ArrayList<Light> dataHis) {
-        TableRow tb_row = new TableRow(this);
+    private void init(TableLayout table, Hashtable<String, String> dataAverage) {TableRow tb_row = new TableRow(this);
         TextView tv_area = new TextView(this);
         tv_area.setText("AREA");
         tv_area.setTextColor(Color.RED);
@@ -305,26 +313,26 @@ public class AverageActivity extends AppCompatActivity {
         tv_value.setPadding(0,0,150,0);
         tb_row.addView(tv_value);
         TextView tv_time = new TextView(this);
-        tv_time.setText("TIME");
+        tv_time.setText("POWER");
         tv_time.setTextColor(Color.RED);
         tv_time.setPadding(0,0,0,0);
         tb_row.addView(tv_time);
         table.addView(tb_row);
-        for (int i = 0 ; i < dataHis.size() ; i++)
+        for (String key : dataAverage.keySet())
         {
             TableRow tbrow = new TableRow(this);
             TextView tv_area_ind = new TextView(this);
-            tv_area_ind.setText(String.valueOf(dataHis.get(i).getArea()));
+            tv_area_ind.setText(key);
             tv_area_ind.setTextColor(Color.BLACK);
             tv_area_ind.setPadding(50, 0, 200, 0);
             tbrow.addView(tv_area_ind);
             TextView tv_value_ind = new TextView(this);
-            tv_value_ind.setText(String.valueOf(dataHis.get(i).getValue()));
+            tv_value_ind.setText(dataAverage.get(key));
             tv_value_ind.setTextColor(Color.BLACK);
             tv_value_ind.setPadding(0, 0, 100, 0);
             tbrow.addView(tv_value_ind);
             TextView tv_time_ind = new TextView(this);
-            tv_time_ind.setText(String.valueOf(dataHis.get(i).getTime()));
+            tv_time_ind.setText(String.valueOf(0));
             tv_time_ind.setTextColor(Color.BLACK);
             tv_time_ind.setPadding(0, 0, 0, 0);
             tbrow.addView(tv_time_ind);
