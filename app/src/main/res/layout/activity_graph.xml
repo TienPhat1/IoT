@@ -8,6 +8,18 @@
     <com.anychart.AnyChartView
         android:id="@+id/any_chart_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="600dp"
+        />
+    <Button
+        android:id="@+id/btn_comback_aver"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
+        android:text="Done"
+        android:textSize="25dp"
+        android:padding="10dp"
+
         />
 </RelativeLayout>

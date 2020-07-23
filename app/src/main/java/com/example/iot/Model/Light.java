@@ -1,18 +1,19 @@
 package com.example.iot.Model;
 
 public class Light {
-    private String Month, Area, Year,Value, Time, Day;
+    private String Month, Area, Year,Value, Time, Day,Power;
 
     public  Light(){
 
     }
-    public Light(String month, String area, String time, String year, String value, String day) {
+    public Light(String month, String area, String time, String year, String value, String day, String power) {
         this.Area = area;
         this.Year = year;
         this.Time = time;
         this.Value = value;
         this.Day = day;
         this.Month = month;
+        this.Power = power;
     }
 
     public void setTime(String time) {
@@ -39,6 +40,10 @@ public class Light {
         this.Year = year;
     }
 
+    public void setPower(String power) {
+        this.Power = power;
+    }
+
     public String getValue() {
         return Value;
     }
@@ -61,5 +66,9 @@ public class Light {
 
     public String getYear() {
         return Year;
+    }
+
+    public String getPower() {
+        return Power;
     }
 }

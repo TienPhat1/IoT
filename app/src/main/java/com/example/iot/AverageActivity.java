@@ -166,17 +166,9 @@ public class AverageActivity extends AppCompatActivity {
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                for(int i = 0 ; i < dateTime.length; i++) {
-//                    Log.d("year-month-day", dateTime[i]);
-//                }
-//
-//
-//                for(int i = 0 ; i < dataForDate.size(); i++)
-//                    Log.d("Data12345",dataForDate.get(i).getArea());
-//                Log.d("DATASIZE", String.valueOf(dataForDate.size()));
-                HashMap <String, String> dataAverage = computeDataAverage(dataForDate);
+                HashMap <String, String[]> dataAverage = computeDataAverage(dataForDate);
                 Log.d("daaaaaaaa", String.valueOf(dataAverage));
-                init(table,dataAverage);
+                init(table, (HashMap<String, String[]>) dataAverage);
                 btn_viewgraph.setVisibility(Button.VISIBLE);
             }
         });
@@ -184,9 +176,10 @@ public class AverageActivity extends AppCompatActivity {
         btn_viewgraph.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HashMap <String, String> dataAverage = computeDataAverage(dataForDate);
+                HashMap <String, String[]> dataAverage = computeDataAverage(dataForDate);
                 Intent intent = new Intent(AverageActivity.this,GraphActivity.class);
                 intent.putExtra("DataAverage",dataAverage);
+                intent.putExtra("Date",dateTime);
                 startActivity(intent);
             }
         });
@@ -196,27 +189,33 @@ public class AverageActivity extends AppCompatActivity {
     }
 
     @SuppressLint("DefaultLocale")
-    private HashMap<String,String> computeDataAverage(ArrayList<Light> dataForDate) {
-        HashMap<String, String> value = new HashMap<>();
+    private HashMap<String,String[]> computeDataAverage(ArrayList<Light> dataForDate) {
+        HashMap<String, String[]> value = new HashMap<>();
         HashMap<String, int[]> valueTemp = new HashMap<>();
 
         for(Light light: dataForDate){
             if(valueTemp.get(light.getArea())== null){
-                int [] lightvalue = new int[2];
+                int [] lightvalue = new int[3];
                 lightvalue[0] = Integer.parseInt(light.getValue());
                 lightvalue[1] = 1;
+                lightvalue[2] = Integer.parseInt(light.getPower());
                 valueTemp.put(light.getArea(),lightvalue);
             }
             else{
-                int [] lightvalue = new int[2];
+                int [] lightvalue = new int[3];
                 lightvalue[0] = Objects.requireNonNull(valueTemp.get(light.getArea()))[0] + Integer.parseInt(light.getValue());
                 lightvalue[1] = Objects.requireNonNull(valueTemp.get(light.getArea()))[1] + 1;
+                lightvalue[2] = Objects.requireNonNull(valueTemp.get(light.getArea()))[2] + Integer.parseInt(light.getPower());
                 valueTemp.put(light.getArea(),lightvalue);
             }
         }
+
         for(String key: valueTemp.keySet()){
-            float valueAver =  (float)Objects.requireNonNull(valueTemp.get(key))[0] / (float)Objects.requireNonNull(valueTemp.get(key))[1];
-            value.put(key,String.format("%.2f",valueAver));
+            Log.d("Key",key);
+            String [] valueAver = new String[2];
+            valueAver[0] = String.format("%.2f",(float)Objects.requireNonNull(valueTemp.get(key))[0] / (float)Objects.requireNonNull(valueTemp.get(key))[1]);
+            valueAver[1] = String.format("%.2f",(float)Objects.requireNonNull(valueTemp.get(key))[2] / (float)Objects.requireNonNull(valueTemp.get(key))[1]);
+            value.put(key,valueAver);
         }
 
         return value;
@@ -287,23 +286,11 @@ public class AverageActivity extends AppCompatActivity {
                     break;
             }
         }
-//        query.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                for (DataSnapshot snapshot: dataSnapshot.getChildren()){
-//                    Light lightData = snapshot.getValue(Light.class);
-//                    dataForDate.add(lightData);
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
+
     }
 
-    private void init(TableLayout table, HashMap<String, String> dataAverage) {TableRow tb_row = new TableRow(this);
+    private void init(TableLayout table, HashMap<String, String[]> dataAverage) {
+        TableRow tb_row = new TableRow(this);
         TextView tv_area = new TextView(this);
         tv_area.setText("AREA");
         tv_area.setTextColor(Color.RED);
@@ -329,12 +316,12 @@ public class AverageActivity extends AppCompatActivity {
             tv_area_ind.setPadding(50, 0, 200, 0);
             tbrow.addView(tv_area_ind);
             TextView tv_value_ind = new TextView(this);
-            tv_value_ind.setText(dataAverage.get(key));
+            tv_value_ind.setText(Objects.requireNonNull(dataAverage.get(key))[0]);
             tv_value_ind.setTextColor(Color.BLACK);
             tv_value_ind.setPadding(0, 0, 100, 0);
             tbrow.addView(tv_value_ind);
             TextView tv_time_ind = new TextView(this);
-            tv_time_ind.setText(String.valueOf(0));
+            tv_time_ind.setText(Objects.requireNonNull(dataAverage.get(key))[1]);
             tv_time_ind.setTextColor(Color.BLACK);
             tv_time_ind.setPadding(0, 0, 0, 0);
             tbrow.addView(tv_time_ind);
