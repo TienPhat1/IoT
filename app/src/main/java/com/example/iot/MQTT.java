@@ -100,14 +100,21 @@ public class MQTT {
 
                 HashMap<String,Object> dataSensor = new HashMap<>();
                 Random random = new Random();
-                int id_room = random.nextInt(3);
+                int id_room = random.nextInt(6);
                 switch (id_room) {
                     case 0: dataSensor.put("Area","Livingroom");
                         break;
                     case 1: dataSensor.put("Area","Bedroom");
                         break;
                     case 2: dataSensor.put("Area","Kitchenroom");
+                        break;
+                    case 3: dataSensor.put("Area","Garden");
+                        break;
+                    case 4: dataSensor.put("Area","Diningroom");
+                        break;
+                    case 5: dataSensor.put("Area","Bathroom");
                 }
+                dataSensor.put("Power",String.valueOf(1+random.nextInt(5)));
                 time.format(DateTimeFormatter.ofPattern("hh/mm/ss"));
                 dataSensor.put("Time",String.valueOf(time));
                 Log.d("Time",time.toString());

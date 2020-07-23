@@ -51,10 +51,11 @@ public class HomeActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+        ////////////////////
         MQTT startMQTT = new MQTT(getApplicationContext());
         Context context = startMQTT.getAppContex();
         startMQTT.startMQTT(context);
-
+        //////////////////
         history = (ImageView) findViewById(R.id.i_history);
         history.setOnClickListener(new View.OnClickListener() {
             @Override
