@@ -23,11 +23,10 @@ public class MQTTHelper {
 //    final String password = "";
 
     final String serverUri = "tcp://52.187.69.114:1883";
-    final String clientId = "id12345";
-    final String subscriptionTopic = "light";
-    final String username = "pnt";
+    final String clientId = "id123";
+    final String subscriptionTopic = "Light";
+    final String username = "phatngtien";
     final String password = "";
-
 
 
 

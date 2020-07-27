@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.TimeZone;
 
 public class LightIntensityActivity extends AppCompatActivity {
     private ImageView logoApp;
@@ -112,15 +113,11 @@ public class LightIntensityActivity extends AppCompatActivity {
                 Log.d("data",String.valueOf(i));
 
             }
-            String val = null;
-            for(int i = 0; i < jsonObject.length(); i++)
-            {
-                val = jsonObject.getString("values").replaceAll("[^0-9]","");
+                assert jsonObject != null;
+                String val = jsonObject.getString("values").replaceAll("[^0-9]","");
                 value = (TextView) findViewById(R.id.tv_value_light);
                 value.setText(val);
-
-            }
-            pushDataToDatabase(val);
+                pushDataToDatabase(val);
 
 
             //Log.d("abc", String.valueOf(jsonmgs));
@@ -134,14 +131,14 @@ public class LightIntensityActivity extends AppCompatActivity {
         rootref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                LocalTime time = LocalTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+                TimeZone etTimeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
                 Date dateCurrent = new Date();
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter1 = new SimpleDateFormat("yyyy/MM/dd");
-                String date = formatter.format(dateCurrent);
-                String dateCurrent1 =formatter1.format(dateCurrent);
-                String [] dateParts = dateCurrent1.split("/");
-
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatDate = new SimpleDateFormat("yyyy/MM/dd");
+                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm:ss");
+                formatDate.setTimeZone(etTimeZone);
+                formatTime.setTimeZone(etTimeZone);
+                String [] dateParts = formatDate.format(dateCurrent).split("/");
+                String [] timeParts = formatTime.format(dateCurrent).split(":");
                 HashMap<String,Object> dataSensor = new HashMap<>();
                 Random random = new Random();
                 int id_room = random.nextInt(6);
@@ -159,13 +156,16 @@ public class LightIntensityActivity extends AppCompatActivity {
                     case 5: dataSensor.put("Area","Bathroom");
                 }
                 dataSensor.put("Power",String.valueOf(1+random.nextInt(5)));
-                time.format(DateTimeFormatter.ofPattern("hh/mm/ss"));
-                dataSensor.put("Time",String.valueOf(time));
-                Log.d("Time",time.toString());
+                dataSensor.put("Time",timeParts[0]+":"+timeParts[1]+":"+dateParts[2]);
                 dataSensor.put("Value",val);
                 dataSensor.put("Year",dateParts[0]);
                 dataSensor.put("Month",dateParts[0]+dateParts[1]);
-                dataSensor.put("Day",date);
+                dataSensor.put("Day",dateParts[0]+dateParts[1]+dateParts[2]);
+                String convertTimeToSecond = String.valueOf(Integer.parseInt(timeParts[0])*3600
+                        +Integer.parseInt(timeParts[1])*60+Integer.parseInt(timeParts[2]));
+                String keyOfSecond = dateParts[0]+dateParts[1]+dateParts[2];
+                dataSensor.put(keyOfSecond,convertTimeToSecond);
+
                 if(dataSnapshot.child("History").exists())
                     rootref.child("History").push().updateChildren(dataSensor);
                 else

@@ -21,10 +21,12 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -53,9 +55,9 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
         ////////////////////
-        MQTT startMQTT = new MQTT(getApplicationContext());
-        Context context = startMQTT.getAppContex();
-        startMQTT.startMQTT(context);
+//        MQTT startMQTT = new MQTT(getApplicationContext());
+//        Context context = startMQTT.getAppContex();
+//        startMQTT.startMQTT(context);
         //////////////////
         history = (ImageView) findViewById(R.id.i_history);
         history.setOnClickListener(new View.OnClickListener() {
@@ -93,11 +95,21 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        Date date = new Date();
-        Log.d("Date", String.valueOf(date));
-        SimpleDateFormat dateFormat;
-        dateFormat = new SimpleDateFormat("kk:mm:ss");
-        Log.d("time", dateFormat.format(date));
+        SimpleDateFormat date = new SimpleDateFormat("MM/dd/yyyy");
+        TimeZone etTimeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
+        date.setTimeZone(etTimeZone);
+        Date current = new Date();
+        Calendar currentTime = Calendar.getInstance();
+        String time = date.format(current.getTime());
+        Log.d("Date", time);
+        String a = "01";
+        int b = Integer.parseInt(a);
+        Log.d("b", String.valueOf(b));
+        String[] splitTime = time.split("/");
+        for(String s : splitTime){
+            Log.d("Time", s);
+        }
+
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {

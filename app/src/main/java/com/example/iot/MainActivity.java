@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         Context context = startMQTT.getAppContex();
         startMQTT.startMQTT(context);
 
-        Intent intent = new Intent(MainActivity.this,AverageActivity.class);
+        Intent intent = new Intent(MainActivity.this,HomeActivity.class);
 
         startActivity(intent);
 
