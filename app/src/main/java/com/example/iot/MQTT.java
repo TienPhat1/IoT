@@ -56,6 +56,7 @@ public class MQTT {
                 //Log.d("Mqtt", message.toString());
 
                 Log.d("topic",topic);
+                convertData(message);
             }
 
             @Override

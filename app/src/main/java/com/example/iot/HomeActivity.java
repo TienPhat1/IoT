@@ -11,19 +11,20 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.iot.Model.Light;
 import com.example.iot.Model.Users;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
-
-import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -44,7 +45,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Users adminData = dataSnapshot.child("Admin").child(admindata).getValue(Users.class);
-                username.setText(adminData.getUsername().toString());
+                username.setText(adminData.getUsername());
             }
 
             @Override
@@ -91,5 +92,48 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Date date = new Date();
+        Log.d("Date", String.valueOf(date));
+        SimpleDateFormat dateFormat;
+        dateFormat = new SimpleDateFormat("kk:mm:ss");
+        Log.d("time", dateFormat.format(date));
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                final ArrayList<Light> list = new ArrayList<>();
+                Query query = FirebaseDatabase.getInstance().getReference().child("History");
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            Light data = snapshot.getValue(Light.class);
+                            list.add(data);
+                        }
+                        receiveData(list);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                
+                
+            }
+        },0,1000*20);
+
+    }
+
+    private void receiveData(ArrayList<Light> list) {
+        int i = 0;
+        for(Light datalight: list){
+            ++i;
+            if(i == list.size())
+                Log.d("Data repeat", datalight.getArea());
+        }
+        Log.d("Data lenght", String.valueOf(list.size()));
     }
 }
