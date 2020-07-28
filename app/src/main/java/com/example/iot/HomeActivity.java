@@ -111,41 +111,8 @@ public class HomeActivity extends AppCompatActivity {
         }
 
 
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                final ArrayList<Light> list = new ArrayList<>();
-                Query query = FirebaseDatabase.getInstance().getReference().child("History");
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                            Light data = snapshot.getValue(Light.class);
-                            list.add(data);
-                        }
-                        receiveData(list);
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-                
-                
-            }
-        },0,1000*20);
 
     }
 
-    private void receiveData(ArrayList<Light> list) {
-        int i = 0;
-        for(Light datalight: list){
-            ++i;
-            if(i == list.size())
-                Log.d("Data repeat", datalight.getArea());
-        }
-        Log.d("Data lenght", String.valueOf(list.size()));
-    }
 }

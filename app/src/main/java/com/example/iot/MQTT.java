@@ -121,6 +121,8 @@ public class MQTT {
                 String convertTimeToSecond = String.valueOf(Integer.parseInt(timeParts[0])*3600
                         +Integer.parseInt(timeParts[1])*60+Integer.parseInt(timeParts[2]));
                 String keyOfSecond = dateParts[0]+dateParts[1]+dateParts[2];
+                double normalTimeToSecond = Double.parseDouble(convertTimeToSecond)/10267.0;
+                convertTimeToSecond = String.valueOf(normalTimeToSecond);
                 dataSensor.put(keyOfSecond,convertTimeToSecond);
 
                 if(dataSnapshot.child("History").exists())
