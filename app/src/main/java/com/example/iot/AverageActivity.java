@@ -82,9 +82,9 @@ public class AverageActivity extends AppCompatActivity {
             }
         });
         /////////////////////////////////////////////////
-        MQTT startMQTT = new MQTT(getApplicationContext());
-        Context context = startMQTT.getAppContex();
-        startMQTT.startMQTT(context);
+//        MQTT startMQTT = new MQTT(getApplicationContext());
+//        Context context = startMQTT.getAppContex();
+//        startMQTT.startMQTT(context);
 
         ///////////////////////////////////////////////////////////////////////////////////
         final ArrayList<Light> dataForDate = new ArrayList<Light>();

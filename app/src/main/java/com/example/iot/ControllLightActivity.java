@@ -68,9 +68,9 @@ public class ControllLightActivity extends AppCompatActivity {
 
             }
         });
-        MQTT startMQTT = new MQTT(getApplicationContext());
-        Context context = startMQTT.getAppContex();
-        startMQTT.startMQTT(context);
+//        MQTT startMQTT = new MQTT(getApplicationContext());
+//        Context context = startMQTT.getAppContex();
+//        startMQTT.startMQTT(context);
 
         try {
             startMQTT();
