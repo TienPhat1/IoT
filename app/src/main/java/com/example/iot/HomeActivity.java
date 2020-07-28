@@ -94,25 +94,7 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        SimpleDateFormat date = new SimpleDateFormat("MM/dd/yyyy");
-        TimeZone etTimeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
-        date.setTimeZone(etTimeZone);
-        Date current = new Date();
-        Calendar currentTime = Calendar.getInstance();
-        String time = date.format(current.getTime());
-        Log.d("Date", time);
-        String a = "01";
-        int b = Integer.parseInt(a);
-        Log.d("b", String.valueOf(b));
-        String[] splitTime = time.split("/");
-        for(String s : splitTime){
-            Log.d("Time", s);
-        }
-
-
-
-
+        
     }
 
 }
