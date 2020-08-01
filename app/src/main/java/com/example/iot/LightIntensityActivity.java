@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.iot.Model.Users;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,6 +38,8 @@ import java.util.Random;
 import java.util.TimeZone;
 
 public class LightIntensityActivity extends AppCompatActivity {
+    private TextView username;
+    private String admindata = "admin";
     private ImageView logoApp;
     private TextView value;
     public String data;
@@ -66,8 +69,25 @@ public class LightIntensityActivity extends AppCompatActivity {
 
             }
         });
+        username = (TextView) findViewById(R.id.tv_admin_light_intensity);
+        FirebaseDatabase dataUser = FirebaseDatabase.getInstance();
+        DatabaseReference RootRef = dataUser.getReference();
+        DatabaseReference rf1= RootRef;
+        DatabaseReference rf2 = RootRef.child("History");
+        rf1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Users adminData = dataSnapshot.child("Admin").child(admindata).getValue(Users.class);
+                username.setText(adminData.getUsername().toString());
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+
+        /////////////////////////////
         try {
             startMQTT();
 

@@ -55,9 +55,9 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
         ////////////////////
-//        MQTT startMQTT = new MQTT(getApplicationContext());
-//        Context context = startMQTT.getAppContex();
-//        startMQTT.startMQTT(context);
+        MQTT startMQTT = new MQTT(getApplicationContext());
+        Context context = startMQTT.getAppContex();
+        startMQTT.startMQTT(context);
         //////////////////
         history = (ImageView) findViewById(R.id.i_history);
         history.setOnClickListener(new View.OnClickListener() {

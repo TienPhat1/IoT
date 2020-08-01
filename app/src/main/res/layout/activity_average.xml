@@ -103,6 +103,8 @@
         android:maxHeight="45dp"
         android:text="OK"
         android:textSize="25dp"
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/newbutton"
         />
 
     <ImageView
@@ -154,6 +156,8 @@
         android:layout_below="@+id/tb_scroll_view"
         android:layout_marginTop="30dp"
         android:textSize="25dp"
-        android:text="Graph"/>
+        android:text="Graph"
+        android:textColor="@color/colorWhite"
+        android:background="@drawable/newbutton"/>
 
 </RelativeLayout>
