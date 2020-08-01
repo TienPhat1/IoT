@@ -1,5 +1,6 @@
 package com.example.iot;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -11,6 +12,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.iot.Model.Users;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.xw.repo.BubbleSeekBar;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -24,6 +31,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class ControllLightActivity extends AppCompatActivity {
+    private TextView username;
+    private String admindata = "admin";
     private BubbleSeekBar bubbleseekbar;
     private TextView value_controller_light;
     private Button btn_changevalue,turn_on,turn_off;
@@ -50,6 +59,27 @@ public class ControllLightActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        username = (TextView) findViewById(R.id.tv_admin_controller_light);
+        FirebaseDatabase dataUser = FirebaseDatabase.getInstance();
+        DatabaseReference RootRef = dataUser.getReference();
+        DatabaseReference rf1= RootRef;
+        DatabaseReference rf2 = RootRef.child("History");
+        rf1.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Users adminData = dataSnapshot.child("Admin").child(admindata).getValue(Users.class);
+                username.setText(adminData.getUsername().toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+        //////////////////////
         bubbleseekbar.setProgress(0);
         bubbleseekbar.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override

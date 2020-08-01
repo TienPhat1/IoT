@@ -1,12 +1,9 @@
 package com.example.iot;
 
-import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -17,9 +14,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -30,14 +32,16 @@ import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
 
+    MQTTHelper mqttHelper;
+
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MQTT startMQTT = new MQTT(getApplicationContext());
-        Context context = startMQTT.getAppContex();
-        startMQTT.startMQTT(context);
-
+//        MQTT startMQTT = new MQTT(getApplicationContext());
+//        Context context = startMQTT.getAppContex();
+//        startMQTT.startMQTT(context);
+        startMQTT();
 
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -56,23 +60,6 @@ public class MainActivity extends AppCompatActivity {
                         +Integer.parseInt(timeParts[1])*60+Integer.parseInt(timeParts[2]) - 50*60);
                 double doubleSecondNormal= Double.parseDouble(convertTimeToSecond)/10267.0;
                 String TimeToSecond = String.valueOf(doubleSecondNormal);
-//                Log.d("Timenormal",TimeToSecond);
-//                Log.d("Result ", String.valueOf(doubleSecondNormal));
-//                double number2 = 1.0;
-//                int count = 0;
-//                for (double i = 0.0; i < 100000.0; i++){
-//                    double number1 = (double)i/(double)10267.0;
-//                    if(number1 == number2) {
-//                        Log.d("Result ", i + " " + number1);
-//                    }
-//                    else
-//                    {
-//                        count++;
-//                    }
-//                    number2 = number1;
-//                }
-//                Log.d("Count ", String.valueOf(count));
-//                Log.d("DayTime",convertTimeToSecond);
 
                 final ArrayList<Light> listData = new ArrayList<>();
                 Query query = FirebaseDatabase.getInstance().getReference().child("History").orderByChild(DayTime).startAt(TimeToSecond);
@@ -85,7 +72,25 @@ public class MainActivity extends AppCompatActivity {
                                 Light data = snapshot.getValue(Light.class);
                                 listData.add(data);
                             }
-                            handleData(listData);
+                            if(listData.size() >= 4){
+                                List<Double> dataAfterHandle = handleData(listData);
+                                try {
+                                    checkCondition(dataAfterHandle);
+                                } catch (MqttException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            else{
+                                List<Double> dataCondition = new ArrayList<>();
+                                for(Light l: listData){
+                                    dataCondition.add(Double.parseDouble(l.getValue()));
+                                }
+                                try {
+                                    checkCondition(dataCondition);
+                                } catch (MqttException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
                     }
 
@@ -100,12 +105,37 @@ public class MainActivity extends AppCompatActivity {
         },0,1000*20);
 
 
-        Intent intent = new Intent(MainActivity.this,HomeActivity.class);
+        android.content.Intent intent = new android.content.Intent(MainActivity.this,HomeActivity.class);
 
         startActivity(intent);
 
     }
-    private void handleData(ArrayList<Light> list) {
+    private void startMQTT() {
+        mqttHelper = new MQTTHelper(getApplicationContext());
+        mqttHelper.setCallback(new MqttCallbackExtended() {
+            @Override
+            public void connectComplete(boolean reconnect, String serverURI) {
+
+            }
+
+            @Override
+            public void connectionLost(Throwable cause) {
+
+            }
+
+            @Override
+            public void messageArrived(String topic, MqttMessage message) throws Exception {
+
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken token) {
+
+            }
+        });
+    }
+
+    private List<Double> handleData(ArrayList<Light> list) {
         List<Double> listValue = new ArrayList<>();
         List<Double> result = new ArrayList<>();
         for(Light l: list){
@@ -134,11 +164,11 @@ public class MainActivity extends AppCompatActivity {
             if (dt > lowerFence && dt < upperFence)
                 result.add(dt);
         }
-        checkCondition(result);
+        return result;
 
     }
 
-    private void checkCondition(List<Double> result) {
+    private <Inten> void checkCondition(List<Double> result) throws MqttException {
         double averageValue = 0;
         for(Double check: result){
             Log.d("Data check", String.valueOf(check));
@@ -146,7 +176,31 @@ public class MainActivity extends AppCompatActivity {
         }
         Log.d("Data Average", String.valueOf(averageValue));
         //Set condition in here
-        //TODO
+
+        if(averageValue > 820.0){
+            sendDataToMQTT("Topic/lightD","1","150");
+            Inten inten = (Inten) new android.content.Intent(MainActivity.this, WarningActivity.class);
+            startActivity((android.content.Intent) inten);
+        }
+        else if(averageValue < 200){
+            sendDataToMQTT("Topic/lightD","1","255");
+        }
+    }
+    private void sendDataToMQTT(String ID, String value1, String value2) {
+        MqttMessage msg = new MqttMessage();
+        msg.setId(1234);
+        msg.setQos(0);
+        msg.setRetained(true);
+
+        String data = "[{\"device_id\":\"LightD\", \"values\":[\"" + value1 + "\",\"" + value2 + "\"]}]";
+        byte[] b = data.getBytes(StandardCharsets.UTF_8);
+        msg.setPayload(b);
+
+        try {
+            mqttHelper.mqttAndroidClient.publish("Topic/lightD", msg);
+            Log.e("publish","published");
+        }catch (MqttException ignored){
+        }
     }
 
     private double getMedian(List<Double> dataList) {

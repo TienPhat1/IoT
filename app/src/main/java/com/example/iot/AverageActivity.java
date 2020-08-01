@@ -166,10 +166,15 @@ public class AverageActivity extends AppCompatActivity {
         btn_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HashMap <String, String[]> dataAverage = computeDataAverage(dataForDate);
-                Log.d("daaaaaaaa", String.valueOf(dataAverage));
-                init(table, (HashMap<String, String[]>) dataAverage);
-                btn_viewgraph.setVisibility(Button.VISIBLE);
+                if(dataForDate.size()  == 0) {
+                    Toast.makeText(AverageActivity.this,"The selected date has no data",Toast.LENGTH_LONG).show();
+                }
+                else{
+                    HashMap<String, String[]> dataAverage = computeDataAverage(dataForDate);
+                    Log.d("daaaaaaaa", String.valueOf(dataAverage));
+                    init(table, (HashMap<String, String[]>) dataAverage);
+                    btn_viewgraph.setVisibility(Button.VISIBLE);
+                }
             }
         });
 
@@ -249,7 +254,6 @@ public class AverageActivity extends AppCompatActivity {
                     });
                     break;
                 case 6:
-                    Log.d("sig", String.valueOf(1));
                     query = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Month").equalTo(dateChoose);
                     query.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -267,7 +271,6 @@ public class AverageActivity extends AppCompatActivity {
                     });
                     break;
                 case 8:
-                    Log.d("sig", String.valueOf(1));
                     query  = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Day").equalTo(dateChoose);
                     query.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override

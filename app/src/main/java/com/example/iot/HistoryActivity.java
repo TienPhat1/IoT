@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.iot.Model.Light;
 import com.example.iot.Model.Users;
@@ -77,17 +78,24 @@ public class HistoryActivity extends AppCompatActivity {
 
         final ArrayList<Light> dataHistory = new ArrayList<>();
         final TableLayout table = (TableLayout) findViewById(R.id.table_main);
-
+        final String[] date_input = new String[1];
+        date_input[0] = "";
         timeData.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if(actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH
                         || event!=null && event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER){
                     if(event == null || !event.isShiftPressed()){
-                        final String date_input = timeData.getText().toString().replace("-","").replace("/","");
-                        dataHistory.clear();
+                        date_input[0] = timeData.getText().toString().replace("-","").replace("/","");
 
-                        Query queryHis = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Day").equalTo(date_input);
+                        dataHistory.clear();
+                        Query queryHis = null;
+                        if(date_input[0].length() == 8)
+                            queryHis = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Day").equalTo(date_input[0]);
+                        else if(date_input[0].length() == 6)
+                            queryHis = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Month").equalTo(date_input[0]);
+                        else if(date_input[0].length() == 4)
+                            queryHis = FirebaseDatabase.getInstance().getReference().child("History").orderByChild("Year").equalTo(date_input[0]);
                         queryHis.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -110,17 +118,23 @@ public class HistoryActivity extends AppCompatActivity {
                 return false;
             }
         });
+            btn_search.setOnClickListener(new View.OnClickListener() {
 
+                @Override
+                public void onClick(View v) {
+                    table.removeAllViewsInLayout();
+//                    Log.d("DataHisLenght", String.valueOf(dataHistory.get(0).getArea()));
+                    if(date_input[0].length() == 0){
+                        Toast.makeText(HistoryActivity.this,"Phease choose date....",Toast.LENGTH_LONG).show();
+                    }
+                    else if(dataHistory.size() ==0){
+                        Toast.makeText(HistoryActivity.this,"The selected date has no data",Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        init(table, dataHistory);
+                    }
 
-        btn_search.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                table.removeAllViewsInLayout();
-                Log.d("DataHisLenght", String.valueOf(dataHistory.get(0).getArea()));
-                init(table,dataHistory);
-
-            }
+                }
 
 
 //            private void collectDataHis(Map<String, Object> value, ArrayList<String[]> dataHistory) {
@@ -133,7 +147,8 @@ public class HistoryActivity extends AppCompatActivity {
 //                for(int i = 0; i < dataHistory.size();i++)
 //                    Log.d("value is" , String.valueOf(dataHistory.get(i)[0]));
 //            }
-        });
+            });
+
 
     }
 
